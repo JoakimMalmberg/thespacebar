@@ -4,22 +4,24 @@
 namespace App\Controller;
 
 
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
     /**
-     * @Route()
+     * @Route("/", name="app_homepage")
      */
     public function homepage()
     {
-        return new Response('OMG!');
+        return $this->render('article/homepage.html.twig');
     }
 
     /**
-     * @Route("/news/{slug}")
+     * @Route("/news/{slug}", name="article_show")
      * @param $slug
      * @return Response
      */
@@ -31,9 +33,24 @@ class ArticleController extends AbstractController
             'Integer tincidunt.'
 
         ];
+
         return $this->render('article/show.html.twig', [
             'title' => ucwords(str_replace('-', ' ', $slug)),
+            'slug' => $slug,
             'comments' => $comments,
         ]);
+    }
+
+    /**
+     * @Route("/news/{slug}/heart", name="article_toggle_heart", methods={"POST"})
+     * @param $slug
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     */
+    public function toggleArticleHeart($slug, LoggerInterface $logger)
+    {
+        $logger->info('Article is being hearted');
+
+        return new JsonResponse(['heart' => rand(5, 100)]);
     }
 }
