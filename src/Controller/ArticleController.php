@@ -5,6 +5,7 @@ namespace App\Controller;
 
 
 use App\Service\MarkdownHelper;
+use App\Service\SlackClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,6 +15,22 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
+    /**
+     * @var
+     */
+    private $isDebug;
+
+
+    /**
+     * ArticleController constructor.
+     * @param bool $isDebug
+     */
+    public function __construct(bool $isDebug)
+    {
+        $this->isDebug = $isDebug;
+    }
+
+
     /**
      * @Route("/", name="app_homepage")
      */
@@ -25,13 +42,17 @@ class ArticleController extends AbstractController
     /**
      * @Route("/news/{slug}", name="article_show")
      * @param $slug
-     * @param MarkdownInterface $markdown
-     * @param AdapterInterface $cache
      * @param MarkdownHelper $markdownHelper
+     * @param SlackClient $slack
      * @return Response
      */
-    public function show($slug, MarkdownHelper $markdownHelper)
+    public function show($slug, MarkdownHelper $markdownHelper, slackClient $slack)
     {
+
+        if ($slug == 'khaaaaaan') {
+            $slack->sendMessage('Khan', 'Ah, Kirk, my old friend...');
+        }
+
         $comments = [
             'Suspendisse faucibus, nunc et pellentesque egestas,',
             'Curabitur turpis.',
